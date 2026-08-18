@@ -26,7 +26,7 @@ contains
     !-------------------------------------------------------
     !=== define key dimensional variables
     !-------------------------------------------------------
-    integer, parameter :: MVT         = 27   ! number of vegetation types
+    integer, parameter :: MVT         = 33   ! number of vegetation types (27 stock USGS + 28-33 for this project's CORINE-remapped-as-USGS WPS_GEOG dataset)
     integer, parameter :: MBAND       = 2    ! number of radiation bands
     integer, parameter :: MSC         = 8    ! number of soil texture
     integer, parameter :: MAX_SOILTYP = 30   ! max number of soil types
