@@ -23,6 +23,7 @@ contains
 ! in & out variables
     type(noahmp_type), intent(inout) :: noahmp
     logical          , intent(in   ) :: FlagVegSfc          ! flag: true if vegetated surface
+    real(kind=kind_noahmp)           :: RoughLenMomBare     ! bare-ground momentum roughness length [m] (A29)
 
 ! --------------------------------------------------------------------
     associate(                                                             &
@@ -53,7 +54,13 @@ contains
           RoughLenMomGrd = RoughLenMomLake
        endif
     else                         ! soil
-       RoughLenMomGrd    = RoughLenMomSoil * (1.0-SnowCoverFrac) + SnowCoverFrac * RoughLenMomSnow
+       ! A29 (2026-09-17): per-class bare-ground roughness, opt-in through the table. A class declared canopy-less
+       ! (HVT = 0) may carry its own roughness in Z0MVT (e.g. barren / sparsely vegetated alpine ground, 0.05 m);
+       ! otherwise the global bare-soil constant Z0SOIL is used as before. The default table has Z0MVT = 0 for
+       ! every class with HVT = 0, so default behaviour is unchanged bit for bit.
+       RoughLenMomBare   = RoughLenMomSoil
+       if ( (HeightCanopyTop <= 0.0) .and. (RoughLenMomVeg > RoughLenMomSoil) ) RoughLenMomBare = RoughLenMomVeg
+       RoughLenMomGrd    = RoughLenMomBare * (1.0-SnowCoverFrac) + SnowCoverFrac * RoughLenMomSnow
     endif
 
     ! surface roughness length and displacement height
